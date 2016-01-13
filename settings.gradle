@@ -1,0 +1,219 @@
+
+// 独自設定の定義とユーザの設定した値の反映を行う
+gradle.settingsEvaluated {
+  gradle.rootProject {
+    ext {
+      // JVM で動くプログラミング言語一覧
+      jvmLanguages = [ 'java', 'scala', 'groovy', 'kotlin' ]
+
+      // Forge Gradle のスナップショット版を使用するか否か
+      useSnapshotForgeGradle = true
+
+      // 使用する Kotlin のバージョン
+      // Maven リポジトリから Kotlin を取得する際に参照される
+      kotlinVersion = '1.0.0-beta-4584'
+
+      // Mod に関する設定の集合
+      mcmod = [
+        // Mod のビルドに関する設定の集合
+        build: [
+          // 開発に使用する言語の名称
+          // java, scala, groovy, kotlin のいずれかを指定
+          language: 'java',
+
+          // コンパイルされるファイルの java 言語レベルを指定
+          languageLevel: 1.6,
+
+          // ソースファイルのエンコーディングを指定
+          encoding: 'utf8',
+
+          // 開発中であるか否か
+          // true にするとバージョンの末尾に '-SNAPSHOT' が付与される
+          snapshot: false,
+
+
+          // Maven に関する設定の集合
+          maven: [
+            // Maven プラグインを有効にするか否か
+            enable: false,
+
+            // Maven リポジトリに関する設定の集合
+            repositories: [
+              // 依存関係解決の際にセントラルリポジトリを参照するか否か
+              central: false,
+
+              // 依存関係解決の際にローカルリポジトリを参照するか否か
+              local: false,
+
+              // 依存関係解決の際に JCenter リポジトリを参照するか否か
+              jcenter: false,
+
+              // 依存関係解決の際に参照するリポジトリの URL 一覧
+              url: []
+            ]
+          ],
+
+
+          // この Mod が依存するライブラリとそのスコープに関する設定
+          dependencies: [
+            // TODO: ドキュメント記述
+            /* compile */:/* [ 'groupId:artifactId:version', '...' ] */
+          ],
+
+
+          // 出力される jar ファイルに関する設定の集合
+          jar: [
+            // jar ファイルのグループ ID
+            // 設定必須項目
+            groupId: '',
+
+            // jar ファイルのベース名称
+            // 設定しない場合は mcmod.info.name の値が参照される
+            // mcmod.info.name でファイル名に使用できない文字を
+            // 使っている場合はこの値を設定する
+            baseName: '',
+
+            // アーカイブファイル出力に関する設定の集合
+            archive: [
+              // ソース･アーカイブを出力するか否か
+              source: true,
+
+              // ドキュメント･アーカイブを出力するか否か
+              document: false
+            ],
+
+            // マニフェストファイルに関する設定の集合
+            manifest: [
+              // マニフェストファイルに記述されるメインアトリビュートの内容
+              // 例)
+              // attributes: [ FMLCorePlugin: 'com.example.LoadingPlugin' ]
+              attributes: [:]
+            ]
+          ]
+        ],
+
+
+        // mcmod.info ファイルに記述される情報の集合
+        // また､これらの情報のうち modid, name, version, updateUrl の項目は
+        // それぞれ @@MODID@@, @@MODNAME@@, @@MODVERSION@@, @@UPDATEJSON@@ という
+        // 文字列を置換する際に参照される
+        info: [
+          // この Mod の ID
+          // 設定必須項目
+          modid: '',
+
+          // この Mod の名称
+          // 設定必須項目
+          name: '',
+
+          // この Mod の説明文
+          description: '',
+
+          // この Mod のバージョン
+          // 設定必須項目
+          version: '',
+
+          // この Mod の開発に使用する Forge のバージョン
+          // 設定必須項目
+          mcversion: '1.8.9-11.15.0.1694',
+
+          // この Mod を配布している Web サイトの URL
+          url: '',
+
+          // この Mod のアップデート確認用の json ファイルの URL
+          // json の書式に関しては下記 URL を参照
+          // https://gist.github.com/LexManos/7aacb9aa991330523884
+          updateUrl: '',
+
+          // この Mod の作者一覧
+          authorList: [],
+
+          // この Mod のクレジット表記
+          credits: '',
+
+          // この Mod のロゴファイル
+          logoFile: '',
+
+          // この Mod のスクリーンショット一覧
+          screenshots: [],
+
+          // この Mod が依存する Mod 一覧
+          dependencies: []
+        ]
+      ]
+
+      // ビルド設定, Mod 情報に対するエイリアスの設定
+      bild = mcmod.build
+      info = mcmod.info
+
+    }
+
+    // ユーザ設定をロードする
+    apply from: 'properties.gradle'
+
+    // ビルド設定のアサーション
+    assert jvmLanguages.contains( bild?.language )
+    assert bild?.jar?.groupId?.trim()
+
+    // Mod 情報のアサーション
+    assert info?.modid?.trim()
+    assert info?.name?.trim()
+    assert info?.version?.trim()
+    assert info?.mcversion?.trim()
+  }
+
+}
+
+
+// プロジェクト評価前に必要な処理
+gradle.beforeProject { project ->
+  // build.gradle で利用する拡張プロパティの定義
+  project.ext {
+
+    // 各言語のプロジェクト時のみ後続のブロックを実行するクロージャ
+    // 使用例)
+    // // bild.language が java の場合のみ 'this is java project.' と表示される
+    // if_javaProject { println 'this is java project.' }
+    jvmLanguages.each { lang ->
+      project.ext."if_${ lang }Project" = { if ( bild.language == lang ) it.call() }
+    }
+
+    // プロジェクト共用のテンポラリフォルダ
+    temporaryDir = project.file( "${ project.buildDir }/tmp" )
+
+    // 指定された名称のプラグインが
+    // ロードされているか否か評価するクロージャ
+    hasPlugin = { project.plugins.hasPlugin( it ) }
+
+    // プロジェクトに定義されている
+    // タスクの名称一覧を取得するクロージャ
+    taskNames = { -> project.tasks.getNames() }
+
+    // 指定された名称のタスクが
+    // 定義されているか否か評価するクロージャ
+    hasTask = { taskNames().contains( it ) }
+
+    // コンパイル前の変数展開時に参照される辞書を返す関数
+    replacements = { [
+      '@@MODID@@':       info.modid,
+      '@@MODNAME@@':     info.name,
+      '@@MODVERSION@@':  info.version,
+      '@@UPDATEJSON@@':  info.updateUrl
+    ] }
+
+  }
+
+  // Forge Gradle で利用されるプラグインのロード
+  project.configure( project.bild ) {
+    switch ( language ) {
+      case 'scala':
+      case 'groovy':
+        project.apply plugin: language
+        break
+      default: break
+    }
+
+    if ( maven.enable ) { project.apply plugin: 'maven' }
+  }
+
+}

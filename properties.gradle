@@ -1,0 +1,12 @@
+
+info.with {
+  modid     = 'example'
+  name      = 'Example'
+  version   = '1.0'
+}
+
+bild.with {
+  jar.with {
+    groupId = 'com.user.modid'
+  }
+}
