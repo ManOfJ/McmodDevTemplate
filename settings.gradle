@@ -52,6 +52,10 @@ gradle.settingsEvaluated {
           // true にするとバージョンの末尾に '-SNAPSHOT' が付与される
           snapshot: false,
 
+          // Mod が属する基本パッケージ
+          // 設定しない場合は mcmod.build.jar.groupId の値が参照される
+          package: '',
+
 
           // Maven に関する設定の集合
           maven: [
