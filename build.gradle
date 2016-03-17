@@ -48,7 +48,7 @@ if_kotlinProject {
 
 // 基本情報の設定
 group            = bild.jar.groupId
-archivesBaseName = bild.jar.baseName ?: info.name
+archivesBaseName = bild.jar.baseName?.trim() ?: info.name
 version          = info.version
 
 // Forge 環境の設定
@@ -125,6 +125,28 @@ task makeMainSourceDirs {
   doLast { sourceDirs.each project.&mkdir }
 }
 
+// Mod の基本パッケージを作成するタスク
+task makePackage( dependsOn: makeMainSourceDirs ) {
+  ext {
+    // 出力先ディレクトリ ( ソースディレクトリ ) 一覧を定義
+    destinationDirs = mainSourceSet."${ bild.language }".srcDirs
+
+    // 作成対象となるパッケージ一覧を返すクロージャ
+    packages = {
+      def pkg = bild.package?.trim() ?: bild.jar.groupId
+      destinationDirs.collect { project.file( "$it/${ pkg.replace( '.', '/' ) }" ) }
+    }
+  }
+
+  // makeMainSourceDirs が失敗していなければ処理を実行
+  onlyIf { makeMainSourceDirs.state.failure == null }
+
+  // 作成対象となるパッケージがすでに存在していれば処理をスキップ
+  outputs.files project.files( packages() )
+
+  doLast { packages().each project.&mkdir }
+}
+
 // アセットディレクトリを作成するタスク
 task makeAssetsDir( dependsOn: makeMainSourceDirs ) {
   ext {
@@ -133,7 +155,7 @@ task makeAssetsDir( dependsOn: makeMainSourceDirs ) {
 
     // 作成対象となるディレクトリ一覧を返すクロージャ
     assetsDirs = {
-      destinationDirs.collect { new File( it, "assets/${ info.modid }" ) }
+      destinationDirs.collect { project.file( "$it/assets/${ info.modid }" ) }
     }
   }
 
@@ -158,7 +180,7 @@ task genMcmodInfo {
 
     // 出力ファイル一覧を返すクロージャ
     outputFiles = {
-      destinationDirs.collect { new File( it, 'mcmod.info' ) }
+      destinationDirs.collect { project.file( "$it/mcmod.info" ) }
     }
   }
 
@@ -269,9 +291,9 @@ if ( bild.jar.archive.document ) {
 // リソースファイルコピー前に mcmod.info を生成するように設定
 processResources.dependsOn genMcmodInfo
 
-// 開発環境構築処理の最後にメインソースディレクトリと
+// 開発環境構築処理の最後に基本パッケージと
 // mcmod.info を生成するように設定
-setupDecompWorkspace.finalizedBy makeMainSourceDirs,
+setupDecompWorkspace.finalizedBy makePackage,
                                  genMcmodInfo
 
 // ソースコードコピー･タスクに変数展開用の辞書をセットする
