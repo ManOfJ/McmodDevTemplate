@@ -48,7 +48,7 @@ if_kotlinProject {
 
 // 基本情報の設定
 group            = bild.jar.groupId
-archivesBaseName = bild.jar.baseName ?: info.name
+archivesBaseName = bild.jar.baseName?.trim() ?: info.name
 version          = info.version
 
 // Forge 環境の設定
@@ -133,7 +133,7 @@ task makeAssetsDir( dependsOn: makeMainSourceDirs ) {
 
     // 作成対象となるディレクトリ一覧を返すクロージャ
     assetsDirs = {
-      destinationDirs.collect { new File( it, "assets/${ info.modid }" ) }
+      destinationDirs.collect { project.file( "$it/assets/${ info.modid }" ) }
     }
   }
 
@@ -158,7 +158,7 @@ task genMcmodInfo {
 
     // 出力ファイル一覧を返すクロージャ
     outputFiles = {
-      destinationDirs.collect { new File( it, 'mcmod.info' ) }
+      destinationDirs.collect { project.file( "$it/mcmod.info" ) }
     }
   }
 
