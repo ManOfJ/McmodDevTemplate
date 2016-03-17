@@ -75,7 +75,7 @@ repositories {
   if ( repoOpt.local )   { mavenLocal()   }
   if ( repoOpt.jcenter ) { jcenter()      }
 
-  repoOpt.url.each       { maven.url it   }
+  repoOpt.url?.each { x -> maven { url "$x" } }
 }
 
 // 依存関係の設定
