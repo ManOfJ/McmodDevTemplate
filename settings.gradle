@@ -77,8 +77,12 @@ gradle.settingsEvaluated {
 
           // この Mod が依存するライブラリとそのスコープに関する設定
           dependencies: [
-            // TODO: ドキュメント記述
-            /* compile */:/* [ 'groupId:artifactId:version', '...' ] */
+            // スコープに紐付く依存ライブラリ一覧を記述する
+            // スコープに関しては下記のURLを参照
+            // http://www.techscore.com/tech/Java/ApacheJakarta/Maven/3/#maven-3-1-1
+            // 例)
+            // compile: [ 'groupId:artifactId:version', '...' ]
+            :
           ],
 
 
