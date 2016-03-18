@@ -3,7 +3,7 @@
 // 必要であれば Kotlin プラグインもロードする
 buildscript {
   repositories {
-    if ( !useSnapshotForgeGradle )
+    if ( !forge.gradle.useSnapshot )
       maven { url 'https://plugins.gradle.org/m2/' }
     else
     {
@@ -17,7 +17,7 @@ buildscript {
     if_kotlinProject { mavenCentral() }
   }
   dependencies {
-    if ( !useSnapshotForgeGradle )
+    if ( !forge.gradle.useSnapshot )
       classpath 'gradle.plugin.net.minecraftforge.gradle:ForgeGradle:2.0.2'
     else
       classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
@@ -53,9 +53,9 @@ version          = info.version
 
 // Forge 環境の設定
 minecraft {
-  version          = info.mcversion
+  version          = forge.version
   runDir           = 'run'
-  mappings         = 'stable_20'
+  mappings         = forge.mappings
   makeObfSourceJar = false
 }
 
