@@ -291,9 +291,10 @@ if ( bild.jar.archive.document ) {
 // リソースファイルコピー前に mcmod.info を生成するように設定
 processResources.dependsOn genMcmodInfo
 
-// 開発環境構築処理の最後に基本パッケージと
-// mcmod.info を生成するように設定
+// 開発環境構築処理の最後に
+// 基本パッケージ/アセットディレクトリ/mcmod.info を生成するように設定
 setupDecompWorkspace.finalizedBy makePackage,
+                                 makeAssetsDir,
                                  genMcmodInfo
 
 // ソースコードコピー･タスクに変数展開用の辞書をセットする
