@@ -48,7 +48,7 @@ if_kotlinProject {
 
 // 基本情報の設定
 group            = bild.jar.groupId
-archivesBaseName = bild.jar.baseName?.trim() ?: info.name
+archivesBaseName = bild.jar.baseName
 version          = info.version
 
 // Forge 環境の設定

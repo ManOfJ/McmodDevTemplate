@@ -208,6 +208,12 @@ gradle.settingsEvaluated {
     assert info?.version?.trim()
     assert info?.mcversion?.trim()
 
+    // jar ファイルのベース名称を設定
+    if ( !bild.jar.baseName?.trim() ) bild.jar.baseName = info.name
+
+    // 開発中であればバージョン文字列に '-SNAPSHOT' 修飾子を付与する
+    if ( bild.snapshot ) info.version += '-SNAPSHOT'
+
   }
 
 }
