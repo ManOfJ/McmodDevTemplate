@@ -3,7 +3,7 @@
 // 必要であれば Kotlin プラグインもロードする
 buildscript {
   repositories {
-    if ( !useSnapshotForgeGradle )
+    if ( !forge.gradle.useSnapshot )
       maven { url 'https://plugins.gradle.org/m2/' }
     else
     {
@@ -17,7 +17,7 @@ buildscript {
     if_kotlinProject { mavenCentral() }
   }
   dependencies {
-    if ( !useSnapshotForgeGradle )
+    if ( !forge.gradle.useSnapshot )
       classpath 'gradle.plugin.net.minecraftforge.gradle:ForgeGradle:2.0.2'
     else
       classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
@@ -48,14 +48,14 @@ if_kotlinProject {
 
 // 基本情報の設定
 group            = bild.jar.groupId
-archivesBaseName = bild.jar.baseName?.trim() ?: info.name
+archivesBaseName = bild.jar.baseName
 version          = info.version
 
 // Forge 環境の設定
 minecraft {
-  version          = info.mcversion
+  version          = forge.version
   runDir           = 'run'
-  mappings         = 'stable_20'
+  mappings         = forge.mappings
   makeObfSourceJar = false
 }
 
@@ -291,9 +291,10 @@ if ( bild.jar.archive.document ) {
 // リソースファイルコピー前に mcmod.info を生成するように設定
 processResources.dependsOn genMcmodInfo
 
-// 開発環境構築処理の最後に基本パッケージと
-// mcmod.info を生成するように設定
+// 開発環境構築処理の最後に
+// 基本パッケージ/アセットディレクトリ/mcmod.info を生成するように設定
 setupDecompWorkspace.finalizedBy makePackage,
+                                 makeAssetsDir,
                                  genMcmodInfo
 
 // ソースコードコピー･タスクに変数展開用の辞書をセットする
