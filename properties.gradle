@@ -1,12 +1,17 @@
 
-info.with {
-  modid     = 'example'
-  name      = 'Example'
-  version   = '1.0'
+project.configure( settings.forge ) {
+  version = '1.9.4-12.17.0.1940'
+  mappings = 'snapshot_20160518'
 }
 
-bild.with {
-  jar.with {
-    groupId = 'com.user.modid'
-  }
+project.configure( settings.mod ) {
+  basePackage = 'com.example'
+  id = 'modid'
+  name = 'ExampleMod'
+  version = '1.0'
+}
+
+project.configure( settings.build ) {
+  language = 'scala'
+  // jar.manifest.attributes = [:]
 }
