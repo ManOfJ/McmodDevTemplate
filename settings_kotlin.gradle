@@ -1,0 +1,18 @@
+
+def kotlinVersion   = '1.0.2'
+def kotlinLibraries = [
+  "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
+  "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+]
+
+project.configure( settings.buildscript ) {
+  repositories << { delegate.mavenCentral() }
+  dependencies << {
+    delegate.classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+  }
+}
+
+project.configure( settings.build ) {
+  plugins << 'kotlin'
+  dependencies << { delegate.compile kotlinLibraries }
+}
