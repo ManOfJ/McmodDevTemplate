@@ -1,28 +1,37 @@
 
-// 基本パッケージとそのパッケージオブジェクト
+// 基本パッケージとModオブジェクト
 // アセットディレクトリ、mcmod.info、デフォルトの言語ファイル( en_US.lang )を生成する
 task startupScalaProject( dependsOn: [ makeBasePackage, makeAssetsDir, genMcmodInfo ] ) {
   ext {
-    packageObject = { makeBasePackage.paths().collect { project.file( "$it/package.scala" ) } }
+    modObjectFile = { makeBasePackage.paths().collect { project.file( "$it/${ settings.mod.internalName }.scala" ) } }
     languageDir = { makeAssetsDir.paths().collect { project.file( "$it/lang" ) } }
   }
 
-  outputs.files project.files( packageObject() )
+  onlyIf { settings.mod.internalName.trim() }
+
+  outputs.files project.files( modObjectFile() )
   outputs.files project.files( languageDir() )
 
   doLast {
-    packageObject().each { file ->
-      file.text =
-        """|package ${ settings.mod.basePackage }
-           |
-           |package object ${ settings.mod.id } {
-           |  final val ID       = \"@modid@\"
-           |  final val NAME     = \"${ settings.mod.name }\"
-           |  final val VERSION  = \"@version@\"
-           |  final val LANGUAGE = \"scala\"
-           |}
-           |""".stripMargin()
-    }
+    modObjectFile()*.text =
+      """|package ${ settings.mod.basePackage }
+         |
+         |
+         |import net.minecraftforge.fml.common.Mod
+         |
+         |
+         |@Mod( modid       = ${ settings.mod.internalName }.ID,
+         |      name        = ${ settings.mod.internalName }.NAME,
+         |      version     = ${ settings.mod.internalName }.VERSION,
+         |      modLanguage = \"scala\" )
+         |object ${ settings.mod.internalName } {
+         |
+         |  final val ID       = \"@modid@\"
+         |  final val NAME     = \"${ settings.mod.name }\"
+         |  final val VERSION  = \"@version@\"
+         |
+         |}
+         |""".stripMargin()
 
     languageDir().each { dir ->
       project.mkdir( dir )
