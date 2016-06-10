@@ -50,11 +50,16 @@ gradle.settingsEvaluated {
           // 必須項目
           basePackage: '',
 
+          // インターナルなModの名称
+          // JMV言語のクラス名として使用できる文字列でなくてはいけない
+          // 必須項目ではないが､指定しないとこの値を参照するタスクが動作しなくなる
+          internalName: '',
+
           // Modを識別するための文字列
           // 必須項目
           id: '',
 
-          // Modの名称
+          // エクスターナルなModの名称
           // 必須項目
           name: '',
 
@@ -143,6 +148,7 @@ gradle.settingsEvaluated {
             groupId: '',
 
             // jarファイルのベース名称
+            // ファイル名に使用できない文字を含んではいけない
             // 設定しない場合はsettings.mod.nameが参照される
             baseName: '',
 
@@ -156,7 +162,7 @@ gradle.settingsEvaluated {
 
             // アーカイブ出力に関する設定
             makeArchive: [
-              // ソース･アーカイブを出力する
+              // ソースコード･アーカイブを出力する
               source: false,
 
               // ドキュメント･アーカイブを出力する
