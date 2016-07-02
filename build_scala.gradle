@@ -20,15 +20,15 @@ task startupScalaProject( dependsOn: [ makeBasePackage, makeAssetsDir, genMcmodI
          |import net.minecraftforge.fml.common.Mod
          |
          |
-         |@Mod( modid       = ${ settings.mod.internalName }.ID,
+         |@Mod( modid       = ${ settings.mod.internalName }.MODID,
          |      name        = ${ settings.mod.internalName }.NAME,
          |      version     = ${ settings.mod.internalName }.VERSION,
          |      modLanguage = \"scala\" )
          |object ${ settings.mod.internalName } {
          |
-         |  final val ID       = \"@modid@\"
-         |  final val NAME     = \"${ settings.mod.name }\"
-         |  final val VERSION  = \"@version@\"
+         |  final val MODID   = \"@modid@\"
+         |  final val NAME    = \"${ settings.mod.name }\"
+         |  final val VERSION = \"@version@\"
          |
          |}
          |""".stripMargin()
